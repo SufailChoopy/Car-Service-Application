@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.practice.entity.CarService;
 import com.practice.exception.CarServiceIdNotFoundException;
 import com.practice.mapper.CarServiceMapper;
-import com.practice.repository.CarServiceRespository;
+import com.practice.repository.CarServiceRepository;
 import com.practice.request.dto.CarServiceRequestDTO;
 import com.practice.response.dto.CarServiceResponseDTO;
 import com.practice.service.CarServiceService;
@@ -22,7 +22,7 @@ import com.practice.utility.ResponseStructure;
 public class CarServiceServiceImpl implements CarServiceService {
 
 	@Autowired
-	private CarServiceRespository carServiceRespository;
+	private CarServiceRepository carServiceRepository;
 
 	@Autowired
 	private CarServiceMapper carServiceMapper;
@@ -30,7 +30,7 @@ public class CarServiceServiceImpl implements CarServiceService {
 	@Override
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> addCarService(CarServiceRequestDTO carServiceRequestDTO) {
 		CarService carService = carServiceMapper.mapToCarService(carServiceRequestDTO);
-		CarService carService1 = carServiceRespository.save(carService);
+		CarService carService1 = carServiceRepository.save(carService);
 		CarServiceResponseDTO mapToCarServiceResponseDTO = carServiceMapper.mapToCarServiceResponse(carService1);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -42,7 +42,7 @@ public class CarServiceServiceImpl implements CarServiceService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> findCarServiceById(int id) {
-		return carServiceRespository.findById(id)   //[Optional<CarService>]
+		return carServiceRepository.findById(id)   //[Optional<CarService>]
 				.map(carService -> ResponseEntity       // return statement not needed because of single line 
 						.status(HttpStatus.FOUND)
 						.body(new ResponseStructure<CarServiceResponseDTO>()
@@ -56,11 +56,11 @@ public class CarServiceServiceImpl implements CarServiceService {
 	@Override
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> updateCarServiceById(int id, CarServiceRequestDTO updatedCarServiceRequestDTO) {
 
-		return carServiceRespository.findById(id)
+		return carServiceRepository.findById(id)
 				.map(existingCarService -> {
 					CarService carService = carServiceMapper.mapToCarService(updatedCarServiceRequestDTO);
 					carService.setId(existingCarService.getId());
-					CarServiceResponseDTO  carServiceResponseDTO = carServiceMapper.mapToCarServiceResponse(carServiceRespository.save(carService));
+					CarServiceResponseDTO  carServiceResponseDTO = carServiceMapper.mapToCarServiceResponse(carServiceRepository.save(carService));
 					return ResponseEntity.status(HttpStatus.OK)
 							.body(new ResponseStructure<CarServiceResponseDTO>()
 									.setStatusCode(HttpStatus.OK.value())
@@ -73,8 +73,8 @@ public class CarServiceServiceImpl implements CarServiceService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> deleteCarServiceById(int id) {
-		return carServiceRespository.findById(id)
-				.map(carService -> { carServiceRespository.delete(carService);
+		return carServiceRepository.findById(id)
+				.map(carService -> { carServiceRepository.delete(carService);
 				return ResponseEntity
 						.status(HttpStatus.OK)
 						.body(new ResponseStructure<CarServiceResponseDTO>()
@@ -87,7 +87,7 @@ public class CarServiceServiceImpl implements CarServiceService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<List<CarServiceResponseDTO>>> findAllCarServices() {
-		List<CarServiceResponseDTO> carServiceResponseDTOList = carServiceRespository.findAll()
+		List<CarServiceResponseDTO> carServiceResponseDTOList = carServiceRepository.findAll()
 				.stream()
 				.map(carService -> carServiceMapper.mapToCarServiceResponse(carService))
 				.toList();

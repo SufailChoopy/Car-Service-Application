@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ public class ServiceController {
 	@Autowired
 	private CarServiceService serviceService;
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/services")
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> addCarService(
 			@RequestBody CarServiceRequestDTO carServiceRequestDTO) {
@@ -35,12 +37,14 @@ public class ServiceController {
 		return serviceService.findCarServiceById(id);
 	}
 
+	
 	@PutMapping("/services/{id}")
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> updateCarServiceById(@PathVariable int id,
 			@RequestBody CarServiceRequestDTO carServiceRequestDTO) {
 		return serviceService.updateCarServiceById(id, carServiceRequestDTO);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/services/{id}")
 	public ResponseEntity<ResponseStructure<CarServiceResponseDTO>> deleteCarServiceById(@PathVariable int id) {
 		return serviceService.deleteCarServiceById(id);
